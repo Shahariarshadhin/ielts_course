@@ -76,6 +76,14 @@ interface ProductPageProps {
   lang: string;
 }
 
+type Section = {
+  id: string;
+  values: {
+    title?: string;
+    description?: string;
+  }[];
+};
+
 const API_URL =
   "https://api.10minuteschool.com/discovery-service/api/v1/products/ielts-course";
 
@@ -100,10 +108,24 @@ interface Instructor {
   [key: string]: unknown;
 }
 
-const InstructorSection = ({ instructors }: { instructors: Instructor[] }) => (
+const InstructorSection = ({
+  instructors,
+  lang,
+}: {
+  instructors: Instructor[];
+  lang: string;
+}) => (
   <section className="mb-8">
-    <h2 className="text-2xl font-semibold mb-4 text-black">
+    {/* <h2 className="text-2xl font-semibold mb-4 text-black">
       Course Instructors
+    </h2> */}
+    <h2 className="text-2xl font-semibold mb-4">
+      {/* {sectionTitle} */}
+      {lang === "en" ? (
+        <span className="ml-2 text-black">Course Instructors</span>
+      ) : (
+        <span className="ml-2 text-black">কোর্স ইন্সট্রাক্টর</span>
+      )}
     </h2>
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
       {instructors.map((inst) => (
@@ -119,9 +141,12 @@ const InstructorSection = ({ instructors }: { instructors: Instructor[] }) => (
             />
           )}
           <div>
-            <div className="font-bold text-lg">{inst.name}</div>
+            <div className="font-bold text-lg text-black">{inst.name}</div>
             {inst.bio && (
-              <div className="text-sm text-gray-600">{inst.bio}</div>
+              <div
+                className="text-sm text-gray-600"
+                dangerouslySetInnerHTML={{ __html: inst.bio }}
+              />
             )}
           </div>
         </div>
@@ -130,37 +155,26 @@ const InstructorSection = ({ instructors }: { instructors: Instructor[] }) => (
   </section>
 );
 
-const ProductTrailerSection = ({ media }: { media: Medium[] }) => {
-  const youtube = media.find(
-    (m) => m.resource_type === "video" && m.resource_value
-  );
-  if (!youtube) return null;
-
-  const videoId = youtube.resource_value;
-  if (!videoId) return null;
-
-  return (
-    <section className="mb-8">
-      <h2 className="text-2xl font-semibold mb-4">Course Trailer</h2>
-      <div className="aspect-w-16 aspect-h-9 w-full max-w-2xl mx-auto">
-        <iframe
-          src={`https://www.youtube.com/embed/${videoId}`}
-          title="Course Trailer"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          className="w-full h-64 rounded-lg border"
-        />
-      </div>
-    </section>
-  );
-};
-
-const FeaturesSection = ({ features }: { features: Section[] }) => {
+const FeaturesSection = ({
+  features,
+  lang,
+}: {
+  features: Section[];
+  lang: string;
+}) => {
   if (!features.length) return null;
   return (
     <section className="mb-8 text-black">
-      <h2 className="text-2xl font-semibold mb-4">
+      {/* <h2 className="text-2xl font-semibold mb-4">
         How the course is laid out
+      </h2> */}
+      <h2 className="text-2xl font-semibold mb-4">
+        {/* {sectionTitle} */}
+        {lang === "en" ? (
+          <span className="ml-2 text-black">How the course is laid out</span>
+        ) : (
+          <span className="ml-2 text-black">কোর্সটি যেভাবে সাজানো হয়েছে</span>
+        )}
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#111827] rounded-md p-4">
         {features.map((feature) =>
@@ -182,12 +196,29 @@ const FeaturesSection = ({ features }: { features: Section[] }) => {
   );
 };
 
-const PointersSection = ({ pointers }: { pointers: Section[] }) => {
+const PointersSection = ({
+  pointers,
+  lang,
+}: {
+  pointers: Section[];
+  lang: string;
+}) => {
   if (!pointers.length) return null;
   return (
     <section className="mb-8 text-black">
-      <h2 className="text-2xl font-semibold mb-4">
+      {/* <h2 className="text-2xl font-semibold mb-4">
         What you will learn by doing the course
+      </h2> */}
+      <h2 className="text-2xl font-semibold mb-4">
+        {/* {sectionTitle} */}
+        {lang === "en" ? (
+          <span className="ml-2 text-black">
+            {" "}
+            What you will learn by doing the course
+          </span>
+        ) : (
+          <span className="ml-2 text-black">কোর্সটি করে যা শিখবেন</span>
+        )}
       </h2>
       <div className=" pl-6 space-y-2 grid grid-cols-1 md:grid-cols-2 gap-5 border border-gray-300 rounded-md p-6">
         {pointers.map((pointer) =>
@@ -204,91 +235,6 @@ const PointersSection = ({ pointers }: { pointers: Section[] }) => {
     </section>
   );
 };
-
-const CourseDetailsSection = ({ details }: { details: Section[] }) => {
-  if (!details.length) return null;
-  return (
-    <section className="mb-8 text-black">
-      <h2 className="text-2xl font-semibold mb-4">Course Details</h2>
-      {details.map((detail) =>
-        detail.values?.map((item, idx) => (
-          <div key={detail.id + "-" + idx} className="mb-6">
-            {item.title && (
-              <div
-                className="prose"
-                dangerouslySetInnerHTML={{ __html: item.title }}
-              />
-            )}
-            {item.description && (
-              <div
-                className="prose mt-2"
-                dangerouslySetInnerHTML={{ __html: item.description }}
-              />
-            )}
-          </div>
-        ))
-      )}
-    </section>
-  );
-};
-
-const ChecklistSection = ({ checklist }: { checklist: Checklist[] }) => {
-  if (!checklist.length) return null;
-  return (
-    <section className="mb-8 text-black">
-      <h2 className="text-2xl font-semibold mb-4">Course Checklist</h2>
-      <div className="grid grid-cols-1 gap-4">
-        {checklist.map((item) => (
-          <div key={item.id} className="flex items-start gap-3 p-3 rounded-lg">
-            {item.icon && (
-              <img
-                src={item.icon}
-                alt=""
-                className="w-6 h-6 mt-1 flex-shrink-0"
-              />
-            )}
-            <span className="text-base">{item.text}</span>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-};
-
-const CTASection = ({ ctaText }: { ctaText?: CtaText }) => {
-  if (!ctaText) return null;
-  return (
-    <section className="mb-8 text-black">
-      <div className="">
-        <div className="">
-          <div className="text-3xl font-bold text-blue-600 mb-4">৳1000</div>
-          <button className="w-full inline-block bg-[#1CAB55] text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-            {ctaText.name || ctaText.text || "Enroll Now"}
-          </button>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const SEOMetadata = ({ seo }: { seo?: Seo }) => {
-  if (!seo) return null;
-  return (
-    <Head>
-      <title>{seo.title}</title>
-      <meta name="description" content={seo.description} />
-      {seo.keywords && <meta name="keywords" content={seo.keywords} />}
-      {seo.image && <meta property="og:image" content={seo.image} />}
-      <meta property="og:title" content={seo.title} />
-      <meta property="og:description" content={seo.description} />
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={seo.title} />
-      <meta name="twitter:description" content={seo.description} />
-      {seo.image && <meta name="twitter:image" content={seo.image} />}
-    </Head>
-  );
-};
-
 const FeatureExplanationsSection = ({
   sections,
   lang,
@@ -321,7 +267,7 @@ const FeatureExplanationsSection = ({
     <section className="mb-8 text-black">
       <h2 className="text-2xl font-semibold mb-4">
         {/* {sectionTitle} */}
-        {lang === "bn" ? (
+        {lang === "en" ? (
           <span className="ml-2 text-black">Course Exclusive Feature</span>
         ) : (
           <span className="ml-2 text-black">কোর্স এক্সক্লুসিভ ফিচার</span>
@@ -376,6 +322,146 @@ const FeatureExplanationsSection = ({
         )}
       </div>
     </section>
+  );
+};
+
+const CourseDetailsSection = ({
+  details,
+  lang,
+}: {
+  details: Section[];
+  lang: string;
+}) => {
+  if (!details.length || !details[0]?.values?.length) return null;
+
+  const values = details[0].values;
+
+  return (
+    <section className="mb-8 text-black">
+      <h2 className="text-2xl font-semibold mb-4">
+        {/* {sectionTitle} */}
+        {lang === "en" ? (
+          <span className="ml-2 text-black">Course Details</span>
+        ) : (
+          <span className="ml-2 text-black">কোর্স সম্পর্কে বিস্তারিত</span>
+        )}
+      </h2>
+      <div className="space-y-4 border border-gray-300 rounded-lg p-4">
+        {values.map((item, idx) => (
+          <details
+            key={idx}
+            open={idx === 0} // First accordion open by default
+            className="border-b border-dashed"
+          >
+            <summary className="cursor-pointer p-4 font-medium transition">
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: item.title || `Section ${idx + 1}`,
+                }}
+              />
+            </summary>
+            <div className="p-4 bg-white">
+              {item.description && (
+                <div
+                  className="prose mt-2"
+                  dangerouslySetInnerHTML={{ __html: item.description }}
+                />
+              )}
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+const ProductTrailerSection = ({ media }: { media: Medium[] }) => {
+  const youtube = media.find(
+    (m) => m.resource_type === "video" && m.resource_value
+  );
+  if (!youtube) return null;
+
+  const videoId = youtube.resource_value;
+  if (!videoId) return null;
+
+  return (
+    <section className="mb-8">
+      <div className="aspect-w-16 aspect-h-9 w-full max-w-2xl mx-auto">
+        <iframe
+          src={`https://www.youtube.com/embed/${videoId}`}
+          title="Course Trailer"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          className="w-full h-64"
+        />
+      </div>
+    </section>
+  );
+};
+
+const CTASection = ({ ctaText, lang }: { ctaText?: CtaText; lang: string }) => {
+  if (!ctaText) return null;
+  return (
+    <section className="mb-8 text-black">
+      <div className="">
+        <div className="">
+          <div className="text-3xl font-bold mb-4">
+            <h2 className="text-2xl font-semibold mb-4">
+              {/* {sectionTitle} */}
+              {lang === "en" ? (
+                <span className="ml-2 text-black"> ৳1000</span>
+              ) : (
+                <span className="ml-2 text-black">৳১০০০</span>
+              )}
+            </h2>
+          </div>
+          <button className="w-full inline-block bg-[#1CAB55] text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+            {ctaText.name || ctaText.text || "Enroll Now"}
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const ChecklistSection = ({ checklist }: { checklist: Checklist[] }) => {
+  if (!checklist.length) return null;
+  return (
+    <section className="mb-8 text-black">
+      <h2 className="text-2xl font-semibold mb-4">Course Checklist</h2>
+      <div className="grid grid-cols-1 gap-4">
+        {checklist.map((item) => (
+          <div key={item.id} className="flex items-start gap-3 p-3 rounded-lg">
+            {item.icon && (
+              <img
+                src={item.icon}
+                alt=""
+                className="w-6 h-6 mt-1 flex-shrink-0"
+              />
+            )}
+            <span className="text-base">{item.text}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+const SEOMetadata = ({ seo }: { seo?: Seo }) => {
+  if (!seo) return null;
+  return (
+    <Head>
+      <title>{seo.title}</title>
+      <meta name="description" content={seo.description} />
+      {seo.keywords && <meta name="keywords" content={seo.keywords} />}
+      {seo.image && <meta property="og:image" content={seo.image} />}
+      <meta property="og:title" content={seo.title} />
+      <meta property="og:description" content={seo.description} />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={seo.title} />
+      <meta name="twitter:description" content={seo.description} />
+      {seo.image && <meta name="twitter:image" content={seo.image} />}
+    </Head>
   );
 };
 
@@ -436,39 +522,49 @@ const ProductPage = async ({ lang }: ProductPageProps) => {
       <>
         <SEOMetadata seo={data.seo} />
         <div className="py-8">
-          <LanguageSwitcher currentLang={lang} />
+          <div className="sticky top-0 z-50 bg-white">
+            <div className="container mx-auto">
+              <LanguageSwitcher currentLang={lang} />
+            </div>
+          </div>
+
           <div className="bg-[#060129] ">
             <div className="container mx-auto text-white p-12">
-              <h1 className="text-3xl md:text-4xl font-bold mb-4">
-                {data.title || "IELTS Course"}
-              </h1>
-              {data.description && (
-                <div
-                  dangerouslySetInnerHTML={{ __html: data.description }}
-                  className="prose mb-6"
-                />
-              )}
+              <div className="md:w-4xl">
+                <h1 className="text-3xl md:text-4xl font-bold mb-4">
+                  {data.title || "IELTS Course"}
+                </h1>
+                {data.description && (
+                  <div
+                    dangerouslySetInnerHTML={{ __html: data.description }}
+                    className="prose mb-6"
+                  />
+                )}
+              </div>
             </div>
           </div>
           <div className="container mx-auto text-white">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-white p-12 col-span-2 ">
                 {instructors.length > 0 && (
-                  <InstructorSection instructors={instructors} />
+                  <InstructorSection instructors={instructors} lang={lang} />
                 )}
-                <FeaturesSection features={featuresSections} />
-                <PointersSection pointers={pointersSections} />
-                <CourseDetailsSection details={detailsSections} />
+                <FeaturesSection features={featuresSections} lang={lang} />
+                <PointersSection pointers={pointersSections} lang={lang} />
+
                 <FeatureExplanationsSection
                   sections={featureExplanationsSections}
                   lang={lang}
                 />
+                <CourseDetailsSection details={detailsSections} lang={lang} />
               </div>
 
-              <div className="border border-gray-300 rounded-lg px-2">
-                <ProductTrailerSection media={data.media || []} />
-                <CTASection ctaText={data.cta_text} />
-                <ChecklistSection checklist={data.checklist || []} />
+              <div className="md:mt-[-30%] bg-white">
+                <div className="md:sticky md:top-24 border border-gray-300 p-2">
+                  <ProductTrailerSection media={data.media || []} />
+                  <CTASection ctaText={data.cta_text} lang={lang} />
+                  <ChecklistSection checklist={data.checklist || []} />
+                </div>
               </div>
             </div>
           </div>
